@@ -1,0 +1,7 @@
+torch
+transformers
+pytorch_lightning==1.9.5
+datasets
+scipy
+scikit-learn
+wandb
