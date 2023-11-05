@@ -1,0 +1,7 @@
+transformers
+pytorch_lightning==1.9.5
+datasets
+scipy
+scikit-learn
+wandb
+--extra-index-url https://download.pytorch.org/whl/cpu torch
