@@ -75,7 +75,7 @@ To access the visualized logs you need to go on the website [weights and biases]
 
 ### Retreive Model
 
-To download the model run this command in the terminal after the model is finished training.
+To download the model run this command in the terminal after the model is finished training.  
 `docker cp container_project_2:/usr/src/app/model.pth model_container.pth`  
 This will copy the file _model_container.pth_ from the container _container_project_2_ to the current path under the filename `model_container.pth`.
 
