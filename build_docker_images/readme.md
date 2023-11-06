@@ -74,7 +74,7 @@ The filename of the model can also be modified. Default is _model.pth_ but with 
 
 ### Build image
 
-If you have set up everything until now, you are ready to build the image. To do this, just run the following command in the path of the project, or replace the `.` part at the end with the path to the [Dockerfile](Dockerfile). The name of the container in the example is project_2, but this can also be replaced with your preferred name(but if you change the name you will need to replace the image name in all examples down below).  
+If you have set up everything until now, you are ready to build the image. To do this, just run the command down below in the path of the project, or replace the `.` part at the end with the path to the [Dockerfile](Dockerfile). The name of the container in the example is project_2, but this can also be replaced with your preferred name(but if you change the name you will need to replace the image name in all examples down below).  
 `docker build -t project_2 . `
 
 ### Run container
