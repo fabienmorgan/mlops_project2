@@ -8,7 +8,7 @@ The goal of this project is to run a training of a predefined model in a Docker 
 
 ## Build Docker images
 
-To build the docker images all the files are in the folder [build_docker_images](build_docker_images). There are two requirements needed to create the image. Firstly you need to have docker installed on your target device, elese you can't build or run a docker image. Secondly you need to have a weights and biases account. The reason for that is because the report will be generated in weights and biases. All further instructions can be found in the folder.
+To build the docker images all the files and instructions are in the folder [build_docker_images](build_docker_images). There are two requirements needed to create the image. Firstly you need to have docker installed on your target device, elese you can't build or run a docker image. Secondly you need to have a weights and biases account. The reason for that is because the report will be generated in weights and biases. All further instructions can be found in the folder.
 
 ## Copy Docker images
 
