@@ -16,9 +16,11 @@ To build these Docker images yourselfe you need there are two requirements.
 The logging of the training is done through weights and biases. Before you build the container you need to enter the API Key to set up the connection between your Docker image and the platform.
 
 At first you need to be logged in to your weights and biases account.  
-Go to your **profile -> settings -> scroll to Danger Zone** and you will be able to find or generate a new API key.
+Go to your **profile -> settings ->** scroll to **Danger Zone** and you will be able to find or generate a new API key.
 
 Copy this key and replace the text _<ENTER_YOUR_WEIGHTSANDBIASES_API_KEY>_ with your key in the file [Dockerfile](Dockerfile) on line 8.
+
+By default the TODO
 
 #### GPU Support(CUDA)
 
@@ -35,10 +37,51 @@ By default the container runns endlessly. The reason for that is so you can copy
 To do this you need to modify the [start.sh](start.sh) file. On line 3 you can remove the line or comment out with a starting `#` sign. Line 3 would look like this:  
 `#tail -f /dev/null`
 
-#### Modify hyperparameters(Optional)
+#### Modify hyperparameters and model filename (Optional)
 
-### Build Container
+The default hyperparameters for the training are the following:
+
+While doing hyperparametertuning in the last project. My conclusions where that the follwoing hyperparameters made the biggest impact:
+
+- learning rate
+- warmup steps
+- adam epsilon
+
+The 3 previously mentioned hyperparameters and the model filename can be modified by adding the options f, l, e, w(file path, learning rate, adam epsilon, warmup steps)the call of the python file. An example of this can look the following way(filename: test.pth, learning rate: 2e-5, adam epsilon: 1e-10, warmup steps: 0):  
+`python distilBERT.py -f test.pth -l 2e-5 -e 1e-10 -w 0`  
+This needs to be changed in the file [start.sh](start.sh) on line 2.
+
+If you want to change any other hyperparameter, you can do this manually by changeing the code in [distilBERT.py](distilBERT.py).
+
+### Build image
+
+If you have set up everything unitl now you are ready to build the image. To do this just run the following comand in the path of the project or replace the `.` part at the end with the path to the [Dockerfile](Dockerfile). The name of the container in the example is project_2 but this can also be replaced with your preffered name(but if you change the name you will need to replace the image name in all examples down below).  
+`docker build -t project_2 . `
+
+### Run container
+
+After the image has been build you are ready to run a container with this image. To do this there are multiple options.
+
+If you want to see the progress of the training in the comandline you can just run the code with this comand:  
+`docker run --name container_project_2 project_2`  
+This has de advantage of seeing the container working, but the disatvantage, that if you want to download the _model.pth_ file you will need to open a new terminal window.
+
+If you don't want to see the output and don't want to have your terminal window locked you can run the container in detached mode with the option `-d` added to the command.  
+`docker run -d --name container_project_2 project_2`
 
 ### Access visualized training progress
 
+To access the visualized logs you need to go on the website [weights and biases](https://wandb.ai/home) and under projects click project-2. There you should see all the logs visualized and compared with the other runs if you ran it multiple times.
+
 ### Retreive Model
+
+To download the model run this command in the terminal after the model is finished training.
+`docker cp container_project_2:/usr/src/app/model.pth model_container.pth`  
+This will copy the file _model_container.pth_ from the container _container_project_2_ to the current path under the filename `model_container.pth`.
+
+This can only be done if the container is **still running**
+
+### Stop container
+
+If you have copied the file and don't need the container running anymore it is important to stop the container, so it doesn't use up ressoruces. To do this run the following command:  
+`docker stop container_project_2  `

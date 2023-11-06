@@ -273,7 +273,7 @@ if __name__ == "__main__":
 
   print(memory_usage())
 
-  wandb.init(entity="fabien-morgan", project="project-2")
+  wandb.init(entity="<ENTER_YOUR_WEIGHTSANDBIASES_PROFILE_NAME>", project="project-2")
 
   learning_rate: float = 2e-5
   epsilon: float = 1e-8
