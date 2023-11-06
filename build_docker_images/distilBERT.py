@@ -1,7 +1,5 @@
 import sys
 import getopt
-import resource
-import pandas as pd
 
 from datetime import datetime
 from typing import Optional
@@ -161,7 +159,6 @@ class GLUETransformer(LightningModule):
         outputs = self(**batch)
         loss = outputs[0]
         self.log("train_loss", loss)
-        print(memory_usage())
         return loss
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
@@ -222,12 +219,12 @@ class GLUETransformer(LightningModule):
         scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
         return [optimizer], [scheduler]
 
-def load_arguments(argv, file_path, learning_rate, epsilon, warmup_steps):
-  arg_help = "{0} -f <file_path> -l <learning_rate> -e <epsilon> -w <warmup_steps>".format(argv[0])
+def load_arguments(argv, file_path, learning_rate, epsilon, warmup_steps, entity, project_name):
+  arg_help = "{0} -f <file_path> -l <learning_rate> -e <epsilon> -w <warmup_steps> -y <entity> -p <project_name>".format(argv[0])
     
   try:
-    opts, args = getopt.getopt(argv[1:], "hf:l:e:w:", ["help", "file_path=", 
-      "learning_rate=", "epsilon=", "warmup_steps="])
+    opts, args = getopt.getopt(argv[1:], "hf:l:e:w:y:p:", ["help", "file_path=", 
+      "learning_rate=", "epsilon=", "warmup_steps=", "entity=", "project_name="])
   except:
       print(arg_help)
       sys.exit(2)
@@ -247,42 +244,28 @@ def load_arguments(argv, file_path, learning_rate, epsilon, warmup_steps):
     elif opt in ("-w", "--warmup_steps"):
       print(f'w: {arg}')
       warmup_steps = int(arg)
+    elif opt in ("-y", "--entity"):
+        entity = arg
+    elif opt in ("-p", "--project_name"):
+        project_name = arg
 
-  return file_path, learning_rate, epsilon, warmup_steps
-
-def obj_size_fmt(num):
-    if num<10**3:
-        return "{:.2f}{}".format(num,"B")
-    elif ((num>=10**3)&(num<10**6)):
-        return "{:.2f}{}".format(num/(1.024*10**3),"KB")
-    elif ((num>=10**6)&(num<10**9)):
-        return "{:.2f}{}".format(num/(1.024*10**6),"MB")
-    else:
-        return "{:.2f}{}".format(num/(1.024*10**9),"GB")
-
-def memory_usage():
-    memory_usage_by_variable=pd.DataFrame({k:sys.getsizeof(v)\
-    for (k,v) in globals().items()},index=['Size'])
-    memory_usage_by_variable=memory_usage_by_variable.T
-    memory_usage_by_variable=memory_usage_by_variable.sort_values(by='Size',ascending=False).head(10)
-    memory_usage_by_variable['Size']=memory_usage_by_variable['Size'].apply(lambda x: obj_size_fmt(x))
-    return memory_usage_by_variable
+  return file_path, learning_rate, epsilon, warmup_steps, entity, project_name
 
 if __name__ == "__main__":
   seed_everything(42)
-
-  print(memory_usage())
-
-  wandb.init(entity="<ENTER_YOUR_WEIGHTSANDBIASES_PROFILE_NAME>", project="project-2")
 
   learning_rate: float = 2e-5
   epsilon: float = 1e-8
   warmup_steps: int = 0
   file_path = "model.pth"
+  entity = "mlops"
+  project_name = "project-2"
 
-  file_path, learning_rate, epsilon, warmup_steps = load_arguments(sys.argv, file_path, learning_rate, epsilon, warmup_steps)
+  file_path, learning_rate, epsilon, warmup_steps, entity, project_name = load_arguments(sys.argv, file_path, learning_rate, epsilon, warmup_steps, entity, project_name)
 
-  wandb_logger = WandbLogger(project='project-2', log_model="all")
+  wandb.init(entity=entity, project=project_name)
+
+  wandb_logger = WandbLogger(project=project_name, log_model="all")
   
   dm = GLUEDataModule(
       model_name_or_path="distilbert-base-uncased",
@@ -305,8 +288,6 @@ if __name__ == "__main__":
       devices=1 if torch.cuda.is_available() else None,
       logger=wandb_logger
   )
-
-  print(memory_usage())
 
   trainer.fit(model, datamodule=dm)
 

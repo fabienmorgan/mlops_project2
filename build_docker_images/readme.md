@@ -13,14 +13,17 @@ To build these Docker images yourselfe you need there are two requirements.
 
 #### Weigths and Biases
 
-The logging of the training is done through weights and biases. Before you build the container you need to enter the API Key to set up the connection between your Docker image and the platform.
+The logging of the training is done through weights and biases. Before you build the container you need to enter the API Key to set up the connection between your Docker image and the platform. Furthermore you need to add your profile or teamname, to save it at the correct place on the platform.
 
 At first you need to be logged in to your weights and biases account.  
 Go to your **profile -> settings ->** scroll to **Danger Zone** and you will be able to find or generate a new API key.
 
 Copy this key and replace the text _<ENTER_YOUR_WEIGHTSANDBIASES_API_KEY>_ with your key in the file [Dockerfile](Dockerfile) on line 8.
 
-By default the TODO
+The profile or temname needs to be added in the [start.sh](start.sh) file on line 2. Replace the text _<ENTER_YOUR_WEIGHTSANDBIASES_PROFILE_NAME>_. After that you should be set with weights and biases.
+
+If you want to change the project name from it's default _project-2_ you need to add the option -p(Project Name) to the to the [call](start.sh) of the python file just after the profile name. An example of that could look like this(Project name: test-mlops):  
+`python distilBERT.py -y fabien-morgan -p test-mlops`
 
 #### GPU Support(CUDA)
 
@@ -37,10 +40,19 @@ By default the container runns endlessly. The reason for that is so you can copy
 To do this you need to modify the [start.sh](start.sh) file. On line 3 you can remove the line or comment out with a starting `#` sign. Line 3 would look like this:  
 `#tail -f /dev/null`
 
-#### Modify hyperparameters and model filename (Optional)
+#### Modify hyperparameters (Optional)
 
 The default hyperparameters for the training are the following:
-TODO
+| Hyperparameter | Value |
+| -------------- | ----- |
+| Optimizer | AdamW |
+| Epsilon | 1e-8 |
+| Learning Rate | 2e-5 |
+| Warmup Steps | 0 |
+| Weight decay | 0.0 |
+| Batch size | 1 |
+| Scheduler | Linear Scheduler with warmup |
+| Precision | 32 |
 
 While doing hyperparametertuning in the last project. My conclusions where that the follwoing hyperparameters made the biggest impact:
 
@@ -48,11 +60,16 @@ While doing hyperparametertuning in the last project. My conclusions where that 
 - warmup steps
 - adam epsilon
 
-The 3 previously mentioned hyperparameters and the model filename can be modified by adding the options f, l, e, w(file path, learning rate, adam epsilon, warmup steps)the call of the python file. An example of this can look the following way(filename: test.pth, learning rate: 2e-5, adam epsilon: 1e-10, warmup steps: 0):  
-`python distilBERT.py -f test.pth -l 2e-5 -e 1e-10 -w 0`  
+The 3 previously mentioned hyperparameters can be modified by adding the options l, e, w(file path, learning rate, adam epsilon, warmup steps)to the call of the python file. An example of this can look the following way(learning rate: 2e-5, adam epsilon: 1e-10, warmup steps: 0):  
+`python distilBERT.py -l 2e-5 -e 1e-10 -w 0 -y <ENTER_YOUR_WEIGHTSANDBIASES_PROFILE_NAME>`  
 This needs to be changed in the file [start.sh](start.sh) on line 2.
 
 If you want to change any other hyperparameter, you can do this manually by changeing the code in [distilBERT.py](distilBERT.py).
+
+### Change filename of model (Optional)
+
+The filename of the model can also be modified. Default is _model.pth_ but with adding the option -f to the call of the python file in the [start.sh](start.sh) file you can change it to any name. It is important to note that all further steps are done with the default value in mind and every instruction that uses the default value needs to be replaced with the value you choose if you change it. An example of that call could look like this(filename: test.model.pth):  
+`python3 distilBERT.py -f test-model.pth -y <ENTER_YOUR_WEIGHTSANDBIASES_PROFILE_NAME>`
 
 ### Build image
 
