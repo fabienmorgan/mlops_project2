@@ -40,6 +40,7 @@ To do this you need to modify the [start.sh](start.sh) file. On line 3 you can r
 #### Modify hyperparameters and model filename (Optional)
 
 The default hyperparameters for the training are the following:
+TODO
 
 While doing hyperparametertuning in the last project. My conclusions where that the follwoing hyperparameters made the biggest impact:
 
